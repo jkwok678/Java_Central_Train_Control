@@ -6,16 +6,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        GUI gui = new GUI();
+        DataCentre data = new DataCentre();
+        GUI gui = new GUI(data);
 
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(gui.getGUI(), 720, 480));
         primaryStage.show();
+
     }
 
 
