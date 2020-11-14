@@ -4,96 +4,95 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class DataCentre {
 
     private SerialPort[] comPortList;
+    private String[] comNameList;
     private SerialPort currentPort;
-    private String portName;
+    private String chosenPort;
     ArrayList<Train> trainList;
-    String lastLocation ="";
+    LocalDateTime messageTime;
+    InputStream in;
+    ArrayList<String> inputTime;
+    ArrayList<String> input;
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     int x =0;
 
     public DataCentre()
     {
-        portName = "COM3";
         comPortList = SerialPort.getCommPorts();
-        setPortFromPortName(portName);
-        currentPort.openPort();
-        currentPort.addDataListener(new SerialPortDataListener() {
-            @Override
-            public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
-            @Override
-            public void serialEvent(SerialPortEvent event)
-            {
-                if (event.getEventType() == SerialPort.LISTENING_EVENT_DATA_RECEIVED)
-                {
-                    byte[] newData = event.getReceivedData();
-                    String message = new String(newData);
-                    //String[] parts = message.split(",");
-                    //lastLocation =  parts[0];
-                    //String message2 = message.substring(0,22);
-                    //System.out.print(lastLocation);
-                    //if (!lastLocation.equals(message2))
-                    //{
-                    //    System.out.print(message2);
-                    //    lastLocation = message2;
-                    //}
-                    /*if (x<8)
-                    {
-                        lastLocation = lastLocation + message;
-                        x++;
-                    }
-                    else
-                    {
-                        System.out.print(lastLocation);
-                        lastLocation ="";
-                        x=0;
-                    }
-                    */
-
-
-                    //System.out.print("[ ");
-                    System.out.print(message);
-                    x++;
-                    if (x>8)
-                    {
-                        System.out.println();
-                        x = 0;
-                    }
-                    //System.out.print(" ]");
-                }
-
-            }
-        });
-
+        comNameList = new String[comPortList.length];
+        for (int i = 0; i<comPortList.length ; i++)
+        {
+            comNameList[i] = comPortList[i].getSystemPortName();
+        }
+        inputTime = new ArrayList<>();
+        input = new ArrayList<>();
     }
 
-    public SerialPort[] getComPortList() {
+    public SerialPort[] getComPortList()
+    {
         return comPortList;
     }
 
-    public void setComPortList(SerialPort[] comPortList) {
+    public void setComPortList(SerialPort[] comPortList)
+    {
         this.comPortList = comPortList;
     }
-    public SerialPort getCurrentPort() {
+
+    public String[] getComNameList()
+    {
+        return comNameList;
+    }
+
+    public void setComNameList(String[] comNameList)
+    {
+        this.comNameList = comNameList;
+    }
+
+    public SerialPort getCurrentPort()
+    {
         return currentPort;
     }
 
-    public void setCurrentPort(SerialPort currentPort) {
+    public void setCurrentPort(SerialPort currentPort)
+    {
         this.currentPort = currentPort;
     }
 
-    public String getPortName() {
-        return portName;
+    public String getChosenPort()
+    {
+        return chosenPort;
     }
 
-    public void setPortName(String portName) {
-        this.portName = portName;
+    public void setChosenPort(String portName)
+    {
+        this.chosenPort = portName;
     }
 
-    public void setPortFromPortName(String portWanted) {
+    public ArrayList<String> getInputTime() {
+        return inputTime;
+    }
+
+    public void setInputTime(ArrayList<String> inputTime) {
+        this.inputTime = inputTime;
+    }
+
+    public ArrayList<String> getInput() {
+        return input;
+    }
+
+    public void setInput(ArrayList<String> input) {
+        this.input = input;
+    }
+
+    public void setPortFromPortName(String portWanted)
+    {
         for (SerialPort port : comPortList)
         {
             if (port.getSystemPortName().equals(portWanted))
@@ -102,5 +101,43 @@ public class DataCentre {
             }
         }
 
+    }
+
+    public boolean openSelectedPort()
+    {
+        return currentPort.openPort();
+    }
+
+    public boolean closeSelectedPort()
+    {
+        return currentPort.closePort();
+    }
+
+    public String readDataFromUSB()
+    {
+        currentPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+        in = currentPort.getInputStream();
+        String wholeMessage ="";
+        LocalDateTime messageTime;
+        try
+        {
+            for (int j = 0; j < 21; ++j)
+                //System.out.print("[");
+                wholeMessage = wholeMessage + (char)in.read();
+            //System.out.print("]");
+            in.close();
+        } catch (Exception e) { e.printStackTrace(); }
+        //currentPort.closePort();
+        messageTime = LocalDateTime.now();
+        String timeString = messageTime.format(dtf);
+        inputTime.add(timeString);
+        input.add(wholeMessage);
+        return wholeMessage;
+    }
+
+    public void clearLog()
+    {
+        inputTime.clear();
+        input.clear();
     }
 }
