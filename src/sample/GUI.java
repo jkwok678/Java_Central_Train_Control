@@ -20,6 +20,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/** Creates the layout of the GUI.
+ * @author Jonathan Kwok
+ * @version 1.0
+ * @since 1.0
+ */
 public class GUI {
 
     private Text title;
@@ -38,6 +43,10 @@ public class GUI {
     private TextArea output;
     private VBox layout;
 
+    /**
+     * A method to create the GUI object.
+     * @param dataEntry
+     */
     public GUI(DataCentre dataEntry)
     {
         dataCentre = dataEntry;
@@ -46,10 +55,12 @@ public class GUI {
         addChildren();
     }
 
+    /**
+     * A method to create the top half of the GUI.
+     */
     private void makeTop()
     {
         title = new Text("Train control");
-
         USBMode = new RadioButton("USB mode");
         USBMode.setToggleGroup(onlyGroup);
         USBMode.setUserData("USB");
@@ -150,7 +161,9 @@ public class GUI {
         });
     }
 
-
+    /**
+     * A method to create the bottom half of the GUI.
+     */
     private void makeBottom()
     {
         confirmationError = new Text();
@@ -163,18 +176,9 @@ public class GUI {
         layout = new VBox();
     }
 
-    private void update()
-    {
-        dataCentre.readDataFromUSB();
-        String message = "";
-        ArrayList<String> timeList = dataCentre.getInputTime();
-        ArrayList<String> inputList = dataCentre.getInput();
-        for (int i = 0; i< timeList.size(); i++)
-        {
-            message = message + timeList.get(i) + " : " + inputList.get(i) + "\n";
-        }
-        input.setText(message);
-    }
+    /**
+     * A method to add all children into the JavaFX Scene graph.
+     */
     private void addChildren()
     {
         layout.getChildren().add(title);
@@ -189,6 +193,10 @@ public class GUI {
         layout.getChildren().add(output);
     }
 
+    /**
+     * A method to return the GUI.
+     * @return A VBOX  with all GUI elements.
+     */
     public VBox getGUI()
     {
         return layout;
