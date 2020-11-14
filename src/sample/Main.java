@@ -11,7 +11,8 @@ import javax.xml.crypto.Data;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception
+    {
         DataCentre data = new DataCentre();
         GUI gui = new GUI(data);
 
@@ -22,7 +23,8 @@ public class Main extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         launch(args);
     }
 }

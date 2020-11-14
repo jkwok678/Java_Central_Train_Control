@@ -22,12 +22,12 @@ public class DataCentre {
     private String[] comNameList;
     private SerialPort currentPort;
     private String chosenPort;
-    ArrayList<Train> trainList;
-    LocalDateTime messageTime;
-    InputStream in;
-    ArrayList<String> inputTime;
-    ArrayList<String> input;
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private ArrayList<Train> trainList;
+    private LocalDateTime messageTime;
+    private InputStream in;
+    private ArrayList<String> inputTime;
+    private ArrayList<String> input;
+    private DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
     int x =0;
 
     /**
@@ -37,6 +37,7 @@ public class DataCentre {
     {
         comPortList = SerialPort.getCommPorts();
         comNameList = new String[comPortList.length];
+        //Make the names list by going through all COM ports and extracting names into the array.
         for (int i = 0; i<comPortList.length ; i++)
         {
             comNameList[i] = comPortList[i].getSystemPortName();
@@ -189,21 +190,32 @@ public class DataCentre {
      */
     public String readDataFromUSB()
     {
+        //Make sure that the COM port doesn't timeout
         currentPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+        //Use an imput Stream with the COM port.
         in = currentPort.getInputStream();
         String wholeMessage ="";
         LocalDateTime messageTime;
         try
         {
+            //Try get the first 20 bytes of infomration.
             for (int j = 0; j < 21; ++j)
                 //System.out.print("[");
+                //Add it to the message
                 wholeMessage = wholeMessage + (char)in.read();
             //System.out.print("]");
+            //Close the input Stream.
             in.close();
-        } catch (Exception e) { e.printStackTrace(); }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         //currentPort.closePort();
+        //Get the current time and format it to store.
         messageTime = LocalDateTime.now();
-        String timeString = messageTime.format(dtf);
+        String timeString = messageTime.format(format);
+        //Infomration is stored in an arraylist.
         inputTime.add(timeString);
         input.add(wholeMessage);
         return wholeMessage;

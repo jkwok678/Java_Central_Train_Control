@@ -76,9 +76,9 @@ public class GUI {
             public void changed(ObservableValue<? extends Toggle> ob,
                                 Toggle o, Toggle n)
             {
-
                 if (onlyGroup.getSelectedToggle().getUserData().toString().equals("USB"))
                 {
+                    //Create ComboBox with options of COM ports.
                     USBChooser.setItems(FXCollections
                             .observableArrayList(dataCentre.getComNameList()));
                     USBChooser.getSelectionModel().selectFirst();
@@ -126,8 +126,10 @@ public class GUI {
                         {
                             if (startStop.getText().equals("Stop"))
                             {
+                                //Read from USB
                                 dataCentre.readDataFromUSB();
                                 String message = "";
+                                //Create an interface that is like a log for the user to see.
                                 ArrayList<String> timeList = dataCentre.getInputTime();
                                 ArrayList<String> inputList = dataCentre.getInput();
                                 for (int i = 0; i< timeList.size(); i++)
@@ -138,7 +140,6 @@ public class GUI {
                                 input.setText(message);
                                 input.positionCaret(input.getLength());
                             }
-
                         }
                     },0,250);
                 }
@@ -201,8 +202,5 @@ public class GUI {
     {
         return layout;
     }
-
-
-
 
 }
