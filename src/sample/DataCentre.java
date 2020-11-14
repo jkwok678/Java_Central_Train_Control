@@ -14,60 +14,23 @@ public class DataCentre {
     ArrayList<Train> trainList;
     String lastLocation ="";
     int x =0;
-
+    byte[] readBuffer;
     public DataCentre()
     {
         portName = "COM3";
         comPortList = SerialPort.getCommPorts();
         setPortFromPortName(portName);
         currentPort.openPort();
-        currentPort.addDataListener(new SerialPortDataListener() {
-            @Override
-            public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
-            @Override
-            public void serialEvent(SerialPortEvent event)
-            {
-                if (event.getEventType() == SerialPort.LISTENING_EVENT_DATA_RECEIVED)
-                {
-                    byte[] newData = event.getReceivedData();
-                    String message = new String(newData);
-                    //String[] parts = message.split(",");
-                    //lastLocation =  parts[0];
-                    //String message2 = message.substring(0,22);
-                    //System.out.print(lastLocation);
-                    //if (!lastLocation.equals(message2))
-                    //{
-                    //    System.out.print(message2);
-                    //    lastLocation = message2;
-                    //}
-                    /*if (x<8)
-                    {
-                        lastLocation = lastLocation + message;
-                        x++;
-                    }
-                    else
-                    {
-                        System.out.print(lastLocation);
-                        lastLocation ="";
-                        x=0;
-                    }
-                    */
+        currentPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 500, 0);
+        readBuffer = new byte[22];
+        try {
+            int numRead = currentPort.readBytes(readBuffer, readBuffer.length);
+            System.out.println("Read " + numRead + " bytes.");
 
+        } catch (Exception e) { e.printStackTrace(); }
 
-                    //System.out.print("[ ");
-                    System.out.print(message);
-                    x++;
-                    if (x>8)
-                    {
-                        System.out.println();
-                        x = 0;
-                    }
-                    //System.out.print(" ]");
-                }
-
-            }
-        });
-
+        String message = new String(readBuffer);
+        System.out.println(message);
     }
 
     public SerialPort[] getComPortList() {
