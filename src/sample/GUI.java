@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -28,12 +29,17 @@ import java.util.TimerTask;
 public class GUI {
 
     private Text title;
+    private HBox USBLayout;
     private RadioButton USBMode;
     private ComboBox USBChooser;
     private RadioButton WIFIMode;
+    private final ToggleGroup USBWIFIGroup = new ToggleGroup();
     private Button startStop;
     boolean go;
-    private final ToggleGroup onlyGroup = new ToggleGroup();
+    private HBox parseLayout;
+    private RadioButton UIDParse;
+    private RadioButton newDataParse;
+    private final ToggleGroup dataGroup = new ToggleGroup();
     private DataCentre dataCentre;
     private Text inputText;
 
@@ -61,22 +67,25 @@ public class GUI {
     private void makeTop()
     {
         title = new Text("Train control");
+        USBLayout = new HBox();
         USBMode = new RadioButton("USB mode");
-        USBMode.setToggleGroup(onlyGroup);
+        USBMode.setToggleGroup(USBWIFIGroup);
         USBMode.setUserData("USB");
         USBChooser = new ComboBox();
         USBChooser.setDisable(true);
         USBChooser.setVisible(false);
+        USBLayout.getChildren().add(USBMode);
+        USBLayout.getChildren().add(USBChooser);
         WIFIMode = new RadioButton("WIFI mode");
-        WIFIMode.setToggleGroup(onlyGroup);
+        WIFIMode.setToggleGroup(USBWIFIGroup);
         WIFIMode.setUserData("WIFI");
 
-        onlyGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        USBWIFIGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
         {
             public void changed(ObservableValue<? extends Toggle> ob,
                                 Toggle o, Toggle n)
             {
-                if (onlyGroup.getSelectedToggle().getUserData().toString().equals("USB"))
+                if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
                 {
                     //Create ComboBox with options of COM ports.
                     USBChooser.setItems(FXCollections
@@ -88,7 +97,7 @@ public class GUI {
                     USBChooser.setVisible(true);
 
                 }
-                if (onlyGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
+                if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
                 {
                     USBChooser.setDisable(true);
                     USBChooser.setVisible(false);
@@ -96,6 +105,30 @@ public class GUI {
                     dataCentre.setCurrentPort(null);
                 }
 
+            }
+        });
+        parseLayout = new HBox();
+        UIDParse = new RadioButton("UID mode");
+        newDataParse = new RadioButton("New Data mode");
+        UIDParse.setToggleGroup(dataGroup);
+        newDataParse.setToggleGroup(dataGroup);
+        dataGroup.selectToggle(newDataParse);
+        dataCentre.setStandardParse(true);
+        parseLayout.getChildren().add(UIDParse);
+        parseLayout.getChildren().add(newDataParse);
+        dataGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            public void changed(ObservableValue<? extends Toggle> ob,
+                                Toggle o, Toggle n)
+            {
+                if (n == newDataParse)
+                {
+                    dataCentre.setStandardParse(true);
+                }
+                else
+                {
+                    dataCentre.setStandardParse(false);
+                }
             }
         });
 
@@ -108,6 +141,8 @@ public class GUI {
                 dataCentre.setPortFromPortName(newvalue);
             }
         });
+
+
         startStop = new Button("Start");
         startStop.setOnAction(actionEvent ->  {
             if (startStop.getText().equals("Start"))
@@ -183,9 +218,9 @@ public class GUI {
     private void addChildren()
     {
         layout.getChildren().add(title);
-        layout.getChildren().add(USBMode);
-        layout.getChildren().add(USBChooser);
+        layout.getChildren().add(USBLayout);
         layout.getChildren().add(WIFIMode);
+        layout.getChildren().add(parseLayout);
         layout.getChildren().add(startStop);
         layout.getChildren().add(confirmationError);
         layout.getChildren().add(inputText);

@@ -22,13 +22,13 @@ public class DataCentre {
     private String[] comNameList;
     private SerialPort currentPort;
     private String chosenPort;
+    private boolean standardParse;
     private ArrayList<Train> trainList;
     private LocalDateTime messageTime;
     private InputStream in;
     private ArrayList<String> inputTime;
     private ArrayList<String> input;
     private DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
-    int x =0;
 
     /**
      * Creates the datacentre
@@ -151,6 +151,22 @@ public class DataCentre {
     }
 
     /**
+     * Gets whether we're using the new parsing mode.
+     * @return
+     */
+    public boolean isStandardParse() {
+        return standardParse;
+    }
+
+    /**
+     * Sets whether we're using the new parsing mode or not.
+     * @param standardParse
+     */
+    public void setStandardParse(boolean standardParse) {
+        this.standardParse = standardParse;
+    }
+
+    /**
      * A method to set the port that will be used by using the port name.
      * @param portWanted The String of the port you want to use.
      */
@@ -199,11 +215,29 @@ public class DataCentre {
         try
         {
             //Try get the first 20 bytes of infomration.
-            for (int j = 0; j < 21; ++j)
-                //System.out.print("[");
-                //Add it to the message
-                wholeMessage = wholeMessage + (char)in.read();
-            //System.out.print("]");
+            if (standardParse)
+            {
+               char a = (char)in.read();
+               while (currentPort.isOpen())
+               {
+                   wholeMessage = wholeMessage + a;
+                   a = (char)in.read();
+                   if (a==';')
+                   {
+                       break;
+                   }
+                    //Add it to the message
+                }
+            }
+            else
+            {
+                for (int j = 0; j < 21; ++j)
+                {
+                    //System.out.print("[");
+                    //Add it to the message
+                    wholeMessage = wholeMessage + (char)in.read();
+                }
+            }
             //Close the input Stream.
             in.close();
         }
@@ -215,6 +249,7 @@ public class DataCentre {
         //Get the current time and format it to store.
         messageTime = LocalDateTime.now();
         String timeString = messageTime.format(format);
+        wholeMessage = wholeMessage.replace("\n", "").replace("\r", "");
         //Infomration is stored in an arraylist.
         inputTime.add(timeString);
         input.add(wholeMessage);
