@@ -4,6 +4,9 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
+import java.io.*;
+import java.net.*;
+
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,12 +32,17 @@ public class DataCentre {
     private ArrayList<String> inputTime;
     private ArrayList<String> input;
     private DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+    private ServerSocket server;
+    private Socket connection;
+    BufferedReader inputBuffer;
+    String output;
 
     /**
      * Creates the datacentre
      */
     public DataCentre()
     {
+
         comPortList = SerialPort.getCommPorts();
         comNameList = new String[comPortList.length];
         //Make the names list by going through all COM ports and extracting names into the array.
@@ -44,7 +52,9 @@ public class DataCentre {
         }
         inputTime = new ArrayList<>();
         input = new ArrayList<>();
+
     }
+
 
     /**
      * Gets the list of COM ports.
@@ -209,7 +219,7 @@ public class DataCentre {
         //Make sure that the COM port doesn't timeout
         currentPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
         //Use an imput Stream with the COM port.
-        in = currentPort.getInputStream();
+
         String wholeMessage ="";
         LocalDateTime messageTime;
         try
@@ -247,13 +257,69 @@ public class DataCentre {
         }
         //currentPort.closePort();
         //Get the current time and format it to store.
+        addToArraylists(wholeMessage);
+        return wholeMessage;
+    }
+
+    /**
+     * A method to get ready for using WIFI.
+     */
+    public void startWIFIMode()
+    {
+        try
+        {
+            //connect = new Socket("192.168.43.63", 23);
+            //inWIFI = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+            server = new ServerSocket(80);
+            connection = server.accept();
+            connection.setKeepAlive(true);
+            inputBuffer = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            System.out.println(connection.isConnected());
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * A method to read data over WIFI
+     * @return the information from the Train.
+     */
+    public String readDataOverWIFI() {
+        String wholeMessage ="";
+
+        try {
+            wholeMessage = inputBuffer.readLine();
+            //System.out.println(wholeMessage);
+            addToArraylists(wholeMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return wholeMessage;
+
+    }
+
+    private void addToArraylists(String wholeMessage)
+    {
         messageTime = LocalDateTime.now();
         String timeString = messageTime.format(format);
-        wholeMessage = wholeMessage.replace("\n", "").replace("\r", "");
+
         //Infomration is stored in an arraylist.
-        inputTime.add(timeString);
-        input.add(wholeMessage);
-        return wholeMessage;
+        if (wholeMessage != null)
+        {
+            wholeMessage = wholeMessage.replace("\n", "").replace("\r", "");
+            inputTime.add(timeString);
+            input.add(wholeMessage);
+        }
+
+    }
+
+    public void process (String wholeMessage)
+    {
+        String[] data = wholeMessage.split(",");
+
     }
 
     /**

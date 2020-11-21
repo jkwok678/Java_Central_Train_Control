@@ -4,19 +4,13 @@ package sample;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -149,48 +143,67 @@ public class GUI {
             {
                 startStop.setText("Stop");
                 String port = dataCentre.getChosenPort();
-                if (dataCentre.openSelectedPort())
+                if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
                 {
-
-                    confirmationError.setText(port + " is opened.");
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask()
+                    dataCentre.startWIFIMode();
+                }
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask()
+                {
+                    @Override
+                    public void run()
                     {
-                        @Override
-                        public void run()
+                        if (startStop.getText().equals("Stop"))
                         {
-                            if (startStop.getText().equals("Stop"))
+                            if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
                             {
-                                //Read from USB
-                                dataCentre.readDataFromUSB();
-                                String message = "";
-                                //Create an interface that is like a log for the user to see.
-                                ArrayList<String> timeList = dataCentre.getInputTime();
-                                ArrayList<String> inputList = dataCentre.getInput();
-                                for (int i = 0; i< timeList.size(); i++)
+                                if (dataCentre.openSelectedPort())
                                 {
-                                    message = message + timeList.get(i) + " : " + inputList.get(i) + "\n";
+                                    //Read from USB
+
+                                    confirmationError.setText(port + " is opened.");
+                                    dataCentre.readDataFromUSB();
                                 }
-                                int caretPosition = input.caretPositionProperty().get();
-                                input.setText(message);
-                                input.positionCaret(input.getLength());
+                                else
+                                {
+                                    confirmationError.setText("Cannot connect to" + port);
+                                }
                             }
+                            else
+                            {
+                                dataCentre.readDataOverWIFI();
+                            }
+                            String message = "";
+                            //Create an interface that is like a log for the user to see.
+                            ArrayList<String> timeList = dataCentre.getInputTime();
+                            ArrayList<String> inputList = dataCentre.getInput();
+                            for (int i = 0; i< timeList.size(); i++)
+                            {
+                                message = message + timeList.get(i) + " : " + inputList.get(i) + "\n";
+                            }
+                            int caretPosition = input.caretPositionProperty().get();
+                            input.setText(message);
+                            input.positionCaret(input.getLength());
                         }
-                    },0,250);
-                }
-                else
-                {
-                    confirmationError.setText("Cannot connect to" + port);
-                }
+                    }
+                },0,500);
             }
             else
             {
                 startStop.setText("Start");
                 go = false;
-                if (dataCentre.closeSelectedPort())
+                if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
                 {
-                    confirmationError.setText("Connection to" + dataCentre.getChosenPort() + " is closed");
+                    if (dataCentre.closeSelectedPort())
+                    {
+                        confirmationError.setText("Connection to" + dataCentre.getChosenPort() + " is closed");
+                    }
                 }
+                else
+                {
+
+                }
+
 
             }
 
