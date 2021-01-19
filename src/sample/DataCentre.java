@@ -312,15 +312,28 @@ public class DataCentre {
             wholeMessage = wholeMessage.replace("\n", "").replace("\r", "");
             inputTime.add(timeString);
             input.add(wholeMessage);
+            //process(wholeMessage);
         }
 
     }
 
-    public void process (String wholeMessage)
+    /*public String process (String wholeMessage)
     {
         String[] data = wholeMessage.split(",");
-
+        for(String part : data)
+        {
+            part = part.replaceAll("[^\\d.]", "");
+        }
+        String train = data[0];
+        String location = data[1];
+        String maxSpeed = data[2];
+        String gradient = data[3];
+        String length = data[4];
+        output = ("Train"+ train+ "is at location"+ location+ ". Max speed is "+ maxSpeed+ ". Gradient is "+ gradient+
+        ". Length is "+ length+".");
+        return output;
     }
+    */
 
     /**
      * A method to clear all data stored.

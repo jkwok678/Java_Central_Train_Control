@@ -186,7 +186,7 @@ public class GUI {
                             input.positionCaret(input.getLength());
                         }
                     }
-                },0,500);
+                },0,250);
             }
             else
             {
