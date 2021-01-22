@@ -52,6 +52,7 @@ public class DataCentre {
         }
         inputTime = new ArrayList<>();
         input = new ArrayList<>();
+        trainList = new ArrayList<>();
 
     }
 
@@ -317,7 +318,7 @@ public class DataCentre {
 
     }
 
-    /*public String process (String wholeMessage)
+    public String process (String wholeMessage)
     {
         String[] data = wholeMessage.split(",");
         for(String part : data)
@@ -329,11 +330,10 @@ public class DataCentre {
         String maxSpeed = data[2];
         String gradient = data[3];
         String length = data[4];
-        output = ("Train"+ train+ "is at location"+ location+ ". Max speed is "+ maxSpeed+ ". Gradient is "+ gradient+
-        ". Length is "+ length+".");
+        output = ("Train "+ train + " is at location "+ location + ". Max speed is "+ maxSpeed + ". Gradient is "+
+                gradient+ ". Length is "+ length+".");
         return output;
     }
-    */
 
     /**
      * A method to clear all data stored.

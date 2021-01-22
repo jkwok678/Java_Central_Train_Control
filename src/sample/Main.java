@@ -14,6 +14,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception
     {
         DataCentre data = new DataCentre();
+        System.out.println(data.process("001,005,040,0,100,100;"));
         GUI gui = new GUI(data);
 
         primaryStage.setTitle("Hello World");

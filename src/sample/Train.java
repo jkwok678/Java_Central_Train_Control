@@ -6,5 +6,8 @@ public class Train {
     int maxBreakingPower;
     int maxAcceleration;
     int topSpeed;
+    int direction;
+    int speed;
+    int currentTrackId;
 
 }
