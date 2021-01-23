@@ -302,6 +302,10 @@ public class DataCentre {
 
     }
 
+    /**
+     * A method to add message to List of messages received.
+     * @param wholeMessage
+     */
     private void addToArraylists(String wholeMessage)
     {
         messageTime = LocalDateTime.now();
@@ -318,6 +322,11 @@ public class DataCentre {
 
     }
 
+    /**
+     * A method to extract the message from the train and store it.
+     * @param wholeMessage
+     * @return
+     */
     public String process (String wholeMessage)
     {
         String[] data = wholeMessage.split(",");
@@ -342,5 +351,23 @@ public class DataCentre {
     {
         inputTime.clear();
         input.clear();
+    }
+
+    public void addNewTrain(Train newTrain)
+    {
+        trainList.add(newTrain);
+    }
+
+    public boolean removeTrain(int trainIDtoDelete)
+    {
+        for(Train train: trainList)
+        {
+            if(train.getId() == trainIDtoDelete)
+            {
+                trainList.remove(train);
+                return true;
+            }
+        }
+        return false;
     }
 }

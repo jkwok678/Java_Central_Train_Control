@@ -5,11 +5,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -23,6 +27,9 @@ import java.util.TimerTask;
 public class GUI {
 
     private Text title;
+    private Button addTrain;
+    private Button removeTrain;
+    private Popup addTrainForm;
     private HBox USBLayout;
     private RadioButton USBMode;
     private ComboBox USBChooser;
@@ -60,7 +67,90 @@ public class GUI {
      */
     private void makeTop()
     {
+
         title = new Text("Train control");
+        addTrain = new Button("Add Train");
+        addTrain.setOnAction(actionEvent ->  {
+            Stage addTrainStage = new Stage();
+            addTrainStage.setTitle("Add new Train");
+            GridPane newTrainFormLayout = new GridPane();
+            Label trainDetail = new Label("Train details");
+            GridPane.setConstraints(trainDetail, 0, 0);
+            newTrainFormLayout.getChildren().add(trainDetail);
+
+
+            Label idLabel = new Label("train ID (000-999): ");
+            TextField idTextField = new TextField ();
+            GridPane.setConstraints(idLabel, 0, 1);
+            newTrainFormLayout.getChildren().add(idLabel);
+            GridPane.setConstraints(idTextField, 1, 1);
+            newTrainFormLayout.getChildren().add(idTextField);
+
+
+            Label nameLabel = new Label("train name: ");
+            TextField nameTextField = new TextField();
+            GridPane.setConstraints(nameLabel, 0, 2);
+            newTrainFormLayout.getChildren().add(nameLabel);
+            GridPane.setConstraints(nameTextField, 1, 2);
+            newTrainFormLayout.getChildren().add(nameTextField);
+
+
+            Label maxDecelerationLabel = new Label("train max deceleration: ");
+            TextField maxDecelerationTextField = new TextField();
+            GridPane.setConstraints(maxDecelerationLabel, 0, 3);
+            newTrainFormLayout.getChildren().add(maxDecelerationLabel);
+            GridPane.setConstraints(maxDecelerationTextField, 1, 3);
+            newTrainFormLayout.getChildren().add(maxDecelerationTextField);
+
+
+            Label maxAccelerationLabel = new Label("train max Acceleration: ");
+            TextField maxAccelerationTextField = new TextField();
+            GridPane.setConstraints(maxAccelerationLabel, 0, 4);
+            newTrainFormLayout.getChildren().add(maxAccelerationLabel);
+            GridPane.setConstraints(maxAccelerationTextField, 1, 4);
+            newTrainFormLayout.getChildren().add(maxAccelerationTextField);
+
+
+            Label topSpeedLabel = new Label("train top speed: ");
+            TextField topSpeedTextField = new TextField ();
+            GridPane.setConstraints(topSpeedLabel, 0, 5);
+            newTrainFormLayout.getChildren().add(topSpeedLabel);
+            GridPane.setConstraints(topSpeedTextField, 1, 5);
+            newTrainFormLayout.getChildren().add(topSpeedTextField);
+
+            Button confirmTrain = new Button("Add");
+            GridPane.setConstraints(confirmTrain,1,6);
+            newTrainFormLayout.getChildren().add(confirmTrain);
+            Label errorLabel = new Label();
+            GridPane.setConstraints(errorLabel,0,7,3,1);
+            newTrainFormLayout.getChildren().add(errorLabel);
+            errorLabel.setVisible(false);
+            confirmTrain.setOnAction(actionEvent2 -> {
+                if(!idTextField.getText().matches("\\d{3}"))
+                {
+                    idTextField.setText("");
+                    errorLabel.setText("Needs to be 3 digits integer, with leading zeroes. e.g.(001,010,100)");
+                    errorLabel.setVisible(true);
+                }
+                else
+                {
+                    errorLabel.setVisible(false);
+                }
+            });
+
+
+            Scene popUpAddTrainScene = new Scene(newTrainFormLayout,600,400);
+            addTrainStage.setScene(popUpAddTrainScene);
+            if (!addTrainStage.isShowing())
+            {
+                addTrainStage.show();
+            }
+
+        });
+        removeTrain = new Button("Remove Train");
+        removeTrain.setVisible(false);
+
+
         USBLayout = new HBox();
         USBMode = new RadioButton("USB mode");
         USBMode.setToggleGroup(USBWIFIGroup);
@@ -231,6 +321,8 @@ public class GUI {
     private void addChildren()
     {
         layout.getChildren().add(title);
+        layout.getChildren().add(addTrain);
+        layout.getChildren().add(removeTrain);
         layout.getChildren().add(USBLayout);
         layout.getChildren().add(WIFIMode);
         layout.getChildren().add(parseLayout);
