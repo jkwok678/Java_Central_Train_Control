@@ -5,6 +5,7 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 
 import java.io.InputStream;
@@ -353,12 +354,21 @@ public class DataCentre {
         input.clear();
     }
 
+    /**
+     * A method to add the new train into the datacentre
+     * @param newTrain
+     */
     public void addNewTrain(Train newTrain)
     {
         trainList.add(newTrain);
     }
 
-    public boolean removeTrain(int trainIDtoDelete)
+    /**
+     * A method to remove a train from the data centre by Train ID
+     * @param trainIDtoDelete
+     * @return
+     */
+    public boolean removeTrain(String trainIDtoDelete)
     {
         for(Train train: trainList)
         {
@@ -369,5 +379,23 @@ public class DataCentre {
             }
         }
         return false;
+    }
+
+    /**
+     * A method to get the list of trains.
+     * @return
+     */
+    public ArrayList<Train> getTrainList()
+    {
+        return trainList;
+    }
+
+    /**
+     * A method to set the list of trains.
+     * @param trainList
+     */
+    public void setTrainList(ArrayList<Train> trainList)
+    {
+        this.trainList =  trainList;
     }
 }

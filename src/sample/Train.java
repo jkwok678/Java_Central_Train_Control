@@ -2,16 +2,16 @@ package sample;
 
 
 public class Train {
-    private int id;
+    private String id;
     private String name;
-    private int maxDeceleration;
-    private int maxAcceleration;
+    private double maxAcceleration;
+    private double maxDeceleration;
     private int topSpeed;
     private boolean direction; // true is forwards false is backwards.
     private int speed;
     private int currentTrackId;
 
-    public Train(int id, String name, int maxDeceleration, int maxAcceleration, int topSpeed)
+    public Train(String id, String name, double maxAcceleration, double maxDeceleration, int topSpeed)
     {
         this.id = id;
         this.name = name;
@@ -23,12 +23,12 @@ public class Train {
 
     }
 
-    public int getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId(int id)
+    public void setId(String id)
     {
         this.id = id;
     }
@@ -43,22 +43,22 @@ public class Train {
         this.name = name;
     }
 
-    public int getmaxDeceleration()
+    public double getmaxDeceleration()
     {
         return maxDeceleration;
     }
 
-    public void setmaxDeceleration(int maxDeceleration)
+    public void setmaxDeceleration(double maxDeceleration)
     {
         this.maxDeceleration = maxDeceleration;
     }
 
-    public int getMaxAcceleration()
+    public double getMaxAcceleration()
     {
         return maxAcceleration;
     }
 
-    public void setMaxAcceleration(int maxAcceleration)
+    public void setMaxAcceleration(double maxAcceleration)
     {
         this.maxAcceleration = maxAcceleration;
     }
