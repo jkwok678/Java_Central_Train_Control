@@ -33,7 +33,7 @@ public class GUI {
     private Popup addTrainForm;
     private HBox USBLayout;
     private RadioButton USBMode;
-    private ComboBox USBChooser;
+    private ComboBox USBInputChooser;
     private RadioButton WIFIMode;
     private final ToggleGroup USBWIFIGroup = new ToggleGroup();
     private Button startStop;
@@ -194,19 +194,19 @@ public class GUI {
         if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
         {
             //Create ComboBox with options of COM ports.
-            USBChooser.setItems(FXCollections
+            USBInputChooser.setItems(FXCollections
                     .observableArrayList(dataCentre.getComNameList()));
-            USBChooser.getSelectionModel().selectFirst();
-            dataCentre.setChosenPort(USBChooser.getValue().toString());
-            dataCentre.setPortFromPortName(USBChooser.getValue().toString());
-            USBChooser.setDisable(false);
-            USBChooser.setVisible(true);
+            USBInputChooser.getSelectionModel().selectFirst();
+            dataCentre.setChosenPort(USBInputChooser.getValue().toString());
+            dataCentre.setPortFromPortName(USBInputChooser.getValue().toString());
+            USBInputChooser.setDisable(false);
+            USBInputChooser.setVisible(true);
 
         }
         if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
         {
-            USBChooser.setDisable(true);
-            USBChooser.setVisible(false);
+            USBInputChooser.setDisable(true);
+            USBInputChooser.setVisible(false);
             dataCentre.setChosenPort("");
             dataCentre.setCurrentPort(null);
         }
@@ -231,7 +231,7 @@ public class GUI {
     /**
      * A method to handle choosing what USB to use.
      */
-    public void handleUSBChooserInput(String newValue)
+    public void handleUSBInputChooserInput(String newValue)
     {
         dataCentre.setChosenPort(newValue);
         dataCentre.setPortFromPortName(newValue);
@@ -331,11 +331,11 @@ public class GUI {
         USBMode = new RadioButton("USB mode");
         USBMode.setToggleGroup(USBWIFIGroup);
         USBMode.setUserData("USB");
-        USBChooser = new ComboBox();
-        USBChooser.setDisable(true);
-        USBChooser.setVisible(false);
+        USBInputChooser = new ComboBox();
+        USBInputChooser.setDisable(true);
+        USBInputChooser.setVisible(false);
         USBLayout.getChildren().add(USBMode);
-        USBLayout.getChildren().add(USBChooser);
+        USBLayout.getChildren().add(USBInputChooser);
         WIFIMode = new RadioButton("WIFI mode");
         WIFIMode.setToggleGroup(USBWIFIGroup);
         WIFIMode.setUserData("WIFI");
@@ -353,7 +353,7 @@ public class GUI {
         dataGroup.selectedToggleProperty().addListener((ob,o,n)-> handleDataGroup(n));
 
 
-        USBChooser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
+        USBInputChooser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
         {
             public void changed(ObservableValue<? extends String> ov,
                                 final String oldvalue, final String newvalue)
