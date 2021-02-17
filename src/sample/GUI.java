@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -51,6 +52,7 @@ public class GUI {
     private Text trainText;
     private TextArea trainOutput;
     private VBox layout;
+    private EventHandler InputEvent;
 
     /**
      * A method to create the GUI object.
@@ -65,6 +67,126 @@ public class GUI {
     }
 
     /**
+     * A method to make a new form to add train.
+     */
+    public void handleAddTrainButton()
+    {
+        Stage addTrainStage = new Stage();
+        addTrainStage.setTitle("Add new Train");
+        GridPane newTrainFormLayout = new GridPane();
+        Label trainDetail = new Label("Train details");
+        GridPane.setConstraints(trainDetail, 0, 0);
+        newTrainFormLayout.getChildren().add(trainDetail);
+
+
+        Label idLabel = new Label("train ID (000-999): ");
+        TextField idTextField = new TextField ();
+        GridPane.setConstraints(idLabel, 0, 1);
+        newTrainFormLayout.getChildren().add(idLabel);
+        GridPane.setConstraints(idTextField, 1, 1);
+        newTrainFormLayout.getChildren().add(idTextField);
+
+
+        Label nameLabel = new Label("train name: ");
+        TextField nameTextField = new TextField();
+        GridPane.setConstraints(nameLabel, 0, 2);
+        newTrainFormLayout.getChildren().add(nameLabel);
+        GridPane.setConstraints(nameTextField, 1, 2);
+        newTrainFormLayout.getChildren().add(nameTextField);
+
+
+        Label maxAccelerationLabel = new Label("train max Acceleration: ");
+        TextField maxAccelerationTextField = new TextField();
+        GridPane.setConstraints(maxAccelerationLabel, 0, 3);
+        newTrainFormLayout.getChildren().add(maxAccelerationLabel);
+        GridPane.setConstraints(maxAccelerationTextField, 1, 3);
+        newTrainFormLayout.getChildren().add(maxAccelerationTextField);
+
+
+        Label maxDecelerationLabel = new Label("train max deceleration: ");
+        TextField maxDecelerationTextField = new TextField();
+        GridPane.setConstraints(maxDecelerationLabel, 0, 4);
+        newTrainFormLayout.getChildren().add(maxDecelerationLabel);
+        GridPane.setConstraints(maxDecelerationTextField, 1, 4);
+        newTrainFormLayout.getChildren().add(maxDecelerationTextField);
+
+
+        Label topSpeedLabel = new Label("train top speed(1-999): ");
+        TextField topSpeedTextField = new TextField ();
+        GridPane.setConstraints(topSpeedLabel, 0, 5);
+        newTrainFormLayout.getChildren().add(topSpeedLabel);
+        GridPane.setConstraints(topSpeedTextField, 1, 5);
+        newTrainFormLayout.getChildren().add(topSpeedTextField);
+
+        Button confirmTrain = new Button("Add");
+        GridPane.setConstraints(confirmTrain,1,6);
+        newTrainFormLayout.getChildren().add(confirmTrain);
+        Label errorLabel = new Label();
+        GridPane.setConstraints(errorLabel,0,7,3,1);
+        newTrainFormLayout.getChildren().add(errorLabel);
+        errorLabel.setVisible(false);
+        confirmTrain.setOnAction(actionEvent2 -> {
+            String errorMessage = "";
+            boolean complete = true;
+            int trainId;
+            if(!idTextField.getText().matches("\\d{3}"))
+            {
+                idTextField.setText("");
+                errorMessage = "Needs to be 3 digits integer, with leading zeroes. e.g.(001,010,100)";
+                complete = false;
+            }
+            double maxAcceleration=0;
+            double maxDeceleration=0;
+            int topSpeed=0;
+            try
+            {
+                maxAcceleration = Double.parseDouble(maxAccelerationTextField.getText());
+                maxDeceleration = Double.parseDouble(maxDecelerationTextField.getText());
+                topSpeed = Integer.parseInt(topSpeedTextField.getText());
+            }
+            catch(NumberFormatException e)
+            {
+                errorMessage = errorMessage+ "\n Max acceleration, max deceleration and top speed needs to be " +
+                        "larger than 0. Acceleration and Deceleration can be to 2d.p. with 3 digits";
+                complete = false;
+            }
+
+            if (!complete)
+            {
+                errorLabel.setText(errorMessage);
+                errorLabel.setVisible(true);
+            }
+            else
+            {
+                errorLabel.setVisible(false);
+                Train newTrain = new Train(idTextField.getText(), nameTextField.getText(),maxAcceleration, maxDeceleration, topSpeed);
+                dataCentre.addNewTrain(newTrain);
+                addTrainStage.close();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Train created!");
+                alert.setContentText("Train has been added!");
+                alert.showAndWait();
+                String trainString ="";
+                for (Train train: dataCentre.getTrainList())
+                {
+                    trainString = trainString+ "Train ID: " + train.getId() +" Train name: " + train.getName() + "\n";
+                }
+                trainOutput.setText(trainString);
+            }
+
+
+        });
+
+
+        Scene popUpAddTrainScene = new Scene(newTrainFormLayout,600,400);
+        addTrainStage.setScene(popUpAddTrainScene);
+        if (!addTrainStage.isShowing())
+        {
+            addTrainStage.show();
+        }
+    }
+
+    /**
      * A method to create the top half of the GUI.
      */
     private void makeTop()
@@ -72,122 +194,8 @@ public class GUI {
 
         title = new Text("Train control");
         addTrain = new Button("Add Train");
-        addTrain.setOnAction(actionEvent ->  {
-            Stage addTrainStage = new Stage();
-            addTrainStage.setTitle("Add new Train");
-            GridPane newTrainFormLayout = new GridPane();
-            Label trainDetail = new Label("Train details");
-            GridPane.setConstraints(trainDetail, 0, 0);
-            newTrainFormLayout.getChildren().add(trainDetail);
 
-
-            Label idLabel = new Label("train ID (000-999): ");
-            TextField idTextField = new TextField ();
-            GridPane.setConstraints(idLabel, 0, 1);
-            newTrainFormLayout.getChildren().add(idLabel);
-            GridPane.setConstraints(idTextField, 1, 1);
-            newTrainFormLayout.getChildren().add(idTextField);
-
-
-            Label nameLabel = new Label("train name: ");
-            TextField nameTextField = new TextField();
-            GridPane.setConstraints(nameLabel, 0, 2);
-            newTrainFormLayout.getChildren().add(nameLabel);
-            GridPane.setConstraints(nameTextField, 1, 2);
-            newTrainFormLayout.getChildren().add(nameTextField);
-
-
-            Label maxAccelerationLabel = new Label("train max Acceleration: ");
-            TextField maxAccelerationTextField = new TextField();
-            GridPane.setConstraints(maxAccelerationLabel, 0, 3);
-            newTrainFormLayout.getChildren().add(maxAccelerationLabel);
-            GridPane.setConstraints(maxAccelerationTextField, 1, 3);
-            newTrainFormLayout.getChildren().add(maxAccelerationTextField);
-
-
-            Label maxDecelerationLabel = new Label("train max deceleration: ");
-            TextField maxDecelerationTextField = new TextField();
-            GridPane.setConstraints(maxDecelerationLabel, 0, 4);
-            newTrainFormLayout.getChildren().add(maxDecelerationLabel);
-            GridPane.setConstraints(maxDecelerationTextField, 1, 4);
-            newTrainFormLayout.getChildren().add(maxDecelerationTextField);
-
-
-            Label topSpeedLabel = new Label("train top speed(1-999): ");
-            TextField topSpeedTextField = new TextField ();
-            GridPane.setConstraints(topSpeedLabel, 0, 5);
-            newTrainFormLayout.getChildren().add(topSpeedLabel);
-            GridPane.setConstraints(topSpeedTextField, 1, 5);
-            newTrainFormLayout.getChildren().add(topSpeedTextField);
-
-            Button confirmTrain = new Button("Add");
-            GridPane.setConstraints(confirmTrain,1,6);
-            newTrainFormLayout.getChildren().add(confirmTrain);
-            Label errorLabel = new Label();
-            GridPane.setConstraints(errorLabel,0,7,3,1);
-            newTrainFormLayout.getChildren().add(errorLabel);
-            errorLabel.setVisible(false);
-            confirmTrain.setOnAction(actionEvent2 -> {
-                String errorMessage = "";
-                boolean complete = true;
-                int trainId;
-                if(!idTextField.getText().matches("\\d{3}"))
-                {
-                    idTextField.setText("");
-                    errorMessage = "Needs to be 3 digits integer, with leading zeroes. e.g.(001,010,100)";
-                    complete = false;
-                }
-                double maxAcceleration=0;
-                double maxDeceleration=0;
-                int topSpeed=0;
-                try
-                {
-                    maxAcceleration = Double.parseDouble(maxAccelerationTextField.getText());
-                    maxDeceleration = Double.parseDouble(maxDecelerationTextField.getText());
-                    topSpeed = Integer.parseInt(topSpeedTextField.getText());
-                }
-                catch(NumberFormatException e)
-                {
-                    errorMessage = errorMessage+ "\n Max acceleration, max deceleration and top speed needs to be " +
-                            "larger than 0. Acceleration and Deceleration can be to 2d.p. with 3 digits";
-                    complete = false;
-                }
-
-                if (!complete)
-                {
-                    errorLabel.setText(errorMessage);
-                    errorLabel.setVisible(true);
-                }
-                else
-                {
-                    errorLabel.setVisible(false);
-                    Train newTrain = new Train(idTextField.getText(), nameTextField.getText(),maxAcceleration, maxDeceleration, topSpeed);
-                    dataCentre.addNewTrain(newTrain);
-                    addTrainStage.close();
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Train created!");
-                    alert.setContentText("Train has been added!");
-                    alert.showAndWait();
-                    String trainString ="";
-                    for (Train train: dataCentre.getTrainList())
-                    {
-                        trainString = trainString+ "Train ID: " + train.getId() +" Train name: " + train.getName() + "\n";
-                    }
-                    trainOutput.setText(trainString);
-                }
-
-
-            });
-
-
-            Scene popUpAddTrainScene = new Scene(newTrainFormLayout,600,400);
-            addTrainStage.setScene(popUpAddTrainScene);
-            if (!addTrainStage.isShowing())
-            {
-                addTrainStage.show();
-            }
-
-        });
+        addTrain.setOnAction(actionEvent -> handleAddTrainButton());
         removeTrain = new Button("Remove Train");
         removeTrain.setVisible(false);
 
