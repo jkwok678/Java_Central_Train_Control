@@ -187,8 +187,35 @@ public class GUI {
     }
 
     /**
+     * A method to handle choosing USB or WIFI.
+     */
+    public void handleUSBWIFIGroup()
+    {
+        if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
+        {
+            //Create ComboBox with options of COM ports.
+            USBChooser.setItems(FXCollections
+                    .observableArrayList(dataCentre.getComNameList()));
+            USBChooser.getSelectionModel().selectFirst();
+            dataCentre.setChosenPort(USBChooser.getValue().toString());
+            dataCentre.setPortFromPortName(USBChooser.getValue().toString());
+            USBChooser.setDisable(false);
+            USBChooser.setVisible(true);
+
+        }
+        if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
+        {
+            USBChooser.setDisable(true);
+            USBChooser.setVisible(false);
+            dataCentre.setChosenPort("");
+            dataCentre.setCurrentPort(null);
+        }
+    }
+
+    /**
      * A method to create the top half of the GUI.
      */
+
     private void makeTop()
     {
 
@@ -212,34 +239,8 @@ public class GUI {
         WIFIMode = new RadioButton("WIFI mode");
         WIFIMode.setToggleGroup(USBWIFIGroup);
         WIFIMode.setUserData("WIFI");
+        USBWIFIGroup.selectedToggleProperty().addListener((o,oldVal,newVal)->handleUSBWIFIGroup());
 
-        USBWIFIGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
-        {
-            public void changed(ObservableValue<? extends Toggle> ob,
-                                Toggle o, Toggle n)
-            {
-                if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
-                {
-                    //Create ComboBox with options of COM ports.
-                    USBChooser.setItems(FXCollections
-                            .observableArrayList(dataCentre.getComNameList()));
-                    USBChooser.getSelectionModel().selectFirst();
-                    dataCentre.setChosenPort(USBChooser.getValue().toString());
-                    dataCentre.setPortFromPortName(USBChooser.getValue().toString());
-                    USBChooser.setDisable(false);
-                    USBChooser.setVisible(true);
-
-                }
-                if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
-                {
-                    USBChooser.setDisable(true);
-                    USBChooser.setVisible(false);
-                    dataCentre.setChosenPort("");
-                    dataCentre.setCurrentPort(null);
-                }
-
-            }
-        });
         parseLayout = new HBox();
         UIDParse = new RadioButton("UID mode");
         newDataParse = new RadioButton("New Data mode");
