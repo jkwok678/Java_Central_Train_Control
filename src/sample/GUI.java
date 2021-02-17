@@ -213,9 +213,23 @@ public class GUI {
     }
 
     /**
+     * A method to handle choosing how to parse data.
+     * Tell the program what data to expect.
+     */
+    public void handleDataGroup(Toggle n)
+    {
+        if (n == newDataParse)
+        {
+            dataCentre.setStandardParse(true);
+        }
+        else
+        {
+            dataCentre.setStandardParse(false);
+        }
+    }
+    /**
      * A method to create the top half of the GUI.
      */
-
     private void makeTop()
     {
 
@@ -250,21 +264,7 @@ public class GUI {
         dataCentre.setStandardParse(true);
         parseLayout.getChildren().add(UIDParse);
         parseLayout.getChildren().add(newDataParse);
-        dataGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
-        {
-            public void changed(ObservableValue<? extends Toggle> ob,
-                                Toggle o, Toggle n)
-            {
-                if (n == newDataParse)
-                {
-                    dataCentre.setStandardParse(true);
-                }
-                else
-                {
-                    dataCentre.setStandardParse(false);
-                }
-            }
-        });
+        dataGroup.selectedToggleProperty().addListener((ob,o,n)-> handleDataGroup(n));
 
         USBChooser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
         {
