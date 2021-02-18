@@ -374,7 +374,7 @@ public class GUI {
     {
         USBOutputDCCChooser.setItems(FXCollections
                 .observableArrayList(dataCentre.getComNameList()));
-        USBOutputDCCChooser.getSelectionModel().selectFirst();
+
     }
     /**
      * A method to create the bottom half of the GUI.
@@ -385,6 +385,8 @@ public class GUI {
         inputText = new Text("Input from Arduino");
         input = new TextArea("Start");
         input.setEditable(false);
+        USBOutputDCCChooser = new ComboBox();
+        makeUSBOutputDCCChooser();
         outputText = new Text("Output from this program");
         output = new TextArea();
         output.setEditable(false);
@@ -409,6 +411,7 @@ public class GUI {
         layout.getChildren().add(confirmationError);
         layout.getChildren().add(inputText);
         layout.getChildren().add(input);
+        layout.getChildren().add(USBOutputDCCChooser);
         layout.getChildren().add(outputText);
         layout.getChildren().add(output);
         layout.getChildren().add(trainText);
