@@ -25,7 +25,7 @@ public class DataCentre {
     private SerialPort[] comPortList;
     private String[] comNameList;
     private SerialPort currentInputPort;
-    private String chosenInputPort;
+    private String chosenInputPortName;
     private boolean standardParse;
     private ArrayList<Train> trainList;
     private LocalDateTime messageTime;
@@ -36,6 +36,9 @@ public class DataCentre {
     private ServerSocket server;
     private Socket connection;
     BufferedReader inputBuffer;
+
+    private SerialPort currentDCCOutputPort;
+    private String chosenOutputPortName;
     String output;
 
     /**
@@ -116,18 +119,18 @@ public class DataCentre {
      * Gets the name of the current port.
      * @return The string that represents the port.
      */
-    public String getChosenInputPort()
+    public String getChosenInputPortName()
     {
-        return chosenInputPort;
+        return chosenInputPortName;
     }
 
     /**
      * Sets the name of the current port.
      * @param portName The String that represents the COM port.
      */
-    public void setChosenInputPort(String portName)
+    public void setChosenInputPortName(String portName)
     {
-        this.chosenInputPort = portName;
+        this.chosenInputPortName = portName;
     }
 
     /**
@@ -397,5 +400,37 @@ public class DataCentre {
     public void setTrainList(ArrayList<Train> trainList)
     {
         this.trainList =  trainList;
+    }
+
+    /**
+     * A method to get the current port for DCC connection.
+     * @return The COM port object
+     */
+    public SerialPort getCurrentDCCOutputPort() {
+        return currentDCCOutputPort;
+    }
+
+    /**
+     * A method to set the COM port for DCC connection.
+     * @param currentDCCOutputPort
+     */
+    public void setCurrentDCCOutputPort(SerialPort currentDCCOutputPort) {
+        this.currentDCCOutputPort = currentDCCOutputPort;
+    }
+
+    /**
+     * A method to get the name of the COM port for DCC connection.
+     * @return name of COM port
+     */
+    public String getChosenOutputPortName() {
+        return chosenOutputPortName;
+    }
+
+    /**
+     * A method to set the name of the Output COM port.
+     * @param chosenOutputPortName
+     */
+    public void setChosenOutputPortName(String chosenOutputPortName) {
+        this.chosenOutputPortName = chosenOutputPortName;
     }
 }

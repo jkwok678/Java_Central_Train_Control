@@ -198,7 +198,7 @@ public class GUI {
             USBInputChooser.setItems(FXCollections
                     .observableArrayList(dataCentre.getComNameList()));
             USBInputChooser.getSelectionModel().selectFirst();
-            dataCentre.setChosenInputPort(USBInputChooser.getValue().toString());
+            dataCentre.setChosenInputPortName(USBInputChooser.getValue().toString());
             dataCentre.setPortFromPortName(USBInputChooser.getValue().toString());
             USBInputChooser.setDisable(false);
             USBInputChooser.setVisible(true);
@@ -208,7 +208,7 @@ public class GUI {
         {
             USBInputChooser.setDisable(true);
             USBInputChooser.setVisible(false);
-            dataCentre.setChosenInputPort("");
+            dataCentre.setChosenInputPortName("");
             dataCentre.setCurrentInputPort(null);
         }
     }
@@ -234,7 +234,7 @@ public class GUI {
      */
     public void handleUSBInputChooserInput(String newValue)
     {
-        dataCentre.setChosenInputPort(newValue);
+        dataCentre.setChosenInputPortName(newValue);
         dataCentre.setPortFromPortName(newValue);
     }
 
@@ -247,7 +247,7 @@ public class GUI {
         if (startStop.getText().equals("Start"))
         {
             startStop.setText("Stop");
-            String port = dataCentre.getChosenInputPort();
+            String port = dataCentre.getChosenInputPortName();
             if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("WIFI"))
             {
                 dataCentre.startWIFIMode();
@@ -301,7 +301,7 @@ public class GUI {
             {
                 if (dataCentre.closeSelectedPort())
                 {
-                    confirmationError.setText("Connection to" + dataCentre.getChosenInputPort() + " is closed");
+                    confirmationError.setText("Connection to" + dataCentre.getChosenInputPortName() + " is closed");
                 }
             }
             else
@@ -359,7 +359,7 @@ public class GUI {
             public void changed(ObservableValue<? extends String> ov,
                                 final String oldvalue, final String newvalue)
             {
-                dataCentre.setChosenInputPort(newvalue);
+                dataCentre.setChosenInputPortName(newvalue);
                 dataCentre.setPortFromPortName(newvalue);
             }
         });
@@ -374,7 +374,6 @@ public class GUI {
     {
         USBOutputDCCChooser.setItems(FXCollections
                 .observableArrayList(dataCentre.getComNameList()));
-
     }
     /**
      * A method to create the bottom half of the GUI.
