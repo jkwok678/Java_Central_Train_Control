@@ -24,8 +24,8 @@ public class DataCentre {
 
     private SerialPort[] comPortList;
     private String[] comNameList;
-    private SerialPort currentPort;
-    private String chosenPort;
+    private SerialPort currentInputPort;
+    private String chosenInputPort;
     private boolean standardParse;
     private ArrayList<Train> trainList;
     private LocalDateTime messageTime;
@@ -98,36 +98,36 @@ public class DataCentre {
      * Gets the current chosen port.
      * @return A SerialPort that is to be used.
      */
-    public SerialPort getCurrentPort()
+    public SerialPort getCurrentInputPort()
     {
-        return currentPort;
+        return currentInputPort;
     }
 
     /**
      * Sets the current chosen port.
-     * @param currentPort The chosen SerialPort.
+     * @param currentInputPort The chosen SerialPort.
      */
-    public void setCurrentPort(SerialPort currentPort)
+    public void setCurrentInputPort(SerialPort currentInputPort)
     {
-        this.currentPort = currentPort;
+        this.currentInputPort = currentInputPort;
     }
 
     /**
      * Gets the name of the current port.
      * @return The string that represents the port.
      */
-    public String getChosenPort()
+    public String getChosenInputPort()
     {
-        return chosenPort;
+        return chosenInputPort;
     }
 
     /**
      * Sets the name of the current port.
      * @param portName The String that represents the COM port.
      */
-    public void setChosenPort(String portName)
+    public void setChosenInputPort(String portName)
     {
-        this.chosenPort = portName;
+        this.chosenInputPort = portName;
     }
 
     /**
@@ -188,7 +188,7 @@ public class DataCentre {
         {
             if (port.getSystemPortName().equals(portWanted))
             {
-                currentPort = port;
+                currentInputPort = port;
             }
         }
 
@@ -200,7 +200,7 @@ public class DataCentre {
      */
     public boolean openSelectedPort()
     {
-        return currentPort.openPort();
+        return currentInputPort.openPort();
     }
 
     /**
@@ -209,7 +209,7 @@ public class DataCentre {
      */
     public boolean closeSelectedPort()
     {
-        return currentPort.closePort();
+        return currentInputPort.closePort();
     }
 
     /**
@@ -219,7 +219,7 @@ public class DataCentre {
     public String readDataFromUSB()
     {
         //Make sure that the COM port doesn't timeout
-        currentPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+        currentInputPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
         //Use an imput Stream with the COM port.
 
         String wholeMessage ="";
@@ -230,7 +230,7 @@ public class DataCentre {
             if (standardParse)
             {
                char a = (char)in.read();
-               while (currentPort.isOpen())
+               while (currentInputPort.isOpen())
                {
                    wholeMessage = wholeMessage + a;
                    a = (char)in.read();
@@ -257,7 +257,7 @@ public class DataCentre {
         {
             e.printStackTrace();
         }
-        //currentPort.closePort();
+        //currentInputPort.closePort();
         //Get the current time and format it to store.
         addToArraylists(wholeMessage);
         return wholeMessage;
