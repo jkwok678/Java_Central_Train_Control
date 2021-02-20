@@ -39,6 +39,7 @@ public class DataCentre {
 
     private SerialPort currentDCCOutputPort;
     private String chosenOutputPortName;
+    private boolean power;
     String output;
 
     /**
@@ -182,10 +183,10 @@ public class DataCentre {
     }
 
     /**
-     * A method to set the port that will be used by using the port name.
+     * A method to set the port that will be used for input by using the port name.
      * @param portWanted The String of the port you want to use.
      */
-    public void setPortFromPortName(String portWanted)
+    public void setInputPortFromPortName(String portWanted)
     {
         for (SerialPort port : comPortList)
         {
@@ -198,21 +199,55 @@ public class DataCentre {
     }
 
     /**
-     * A method to open the chosen port.
+     * A method to set the port that will be used by DCC by using the port name.
+     * @param portWanted The String of the port you want to use.
+     */
+    public void setDCCOuputPortFromPortName(String portWanted)
+    {
+        for (SerialPort port : comPortList)
+        {
+            if (port.getSystemPortName().equals(portWanted))
+            {
+                currentDCCOutputPort = port;
+            }
+        }
+
+    }
+
+    /**
+     * A method to open the chosen input port.
      * @return A boolean to say whether it was successful or not.
      */
-    public boolean openSelectedPort()
+    public boolean openSelectedInputPort()
     {
         return currentInputPort.openPort();
     }
 
     /**
-     * A method to close the chosen port.
+     * A method to open the chosen port to output to DCC controller.
      * @return A boolean to say whether it was successful or not.
      */
-    public boolean closeSelectedPort()
+    public boolean openSelectedDCCOutputPort()
+    {
+        return currentDCCOutputPort.openPort();
+    }
+
+    /**
+     * A method to close the chosen input port.
+     * @return A boolean to say whether it was successful or not.
+     */
+    public boolean closeSelectedInputPort()
     {
         return currentInputPort.closePort();
+    }
+
+    /**
+     * A method to close the chosen port for DCC output.
+     * @return A boolean to say whether it was successful or not.
+     */
+    public boolean closeSelectedDCCOutputPort()
+    {
+        return currentDCCOutputPort.closePort();
     }
 
     /**
@@ -432,5 +467,42 @@ public class DataCentre {
      */
     public void setChosenOutputPortName(String chosenOutputPortName) {
         this.chosenOutputPortName = chosenOutputPortName;
+    }
+
+    /**
+     * A method to send the power on command to the DCC++ EX Arduino.
+     */
+    public void togglePowerCommand()
+    {
+        if(!power)
+        {
+            String onCommand ="<1>";
+            currentDCCOutputPort.writeBytes(onCommand.getBytes(),onCommand.length());
+            power = true;
+        }
+        else
+        {
+            String offCommand ="<0>";
+            currentDCCOutputPort.writeBytes(offCommand.getBytes(),offCommand.length());
+            power = false;
+        }
+    }
+
+    /**
+     * A method to see whether the power is on or off.
+     * 0 is off, 1 is on.
+     * @return power is on or off
+     */
+    public boolean isPower() {
+        return power;
+    }
+
+    /**
+     * A method to set the power state.
+     * 0 is off, 1 is on.
+     * @param power
+     */
+    public void setPower(boolean power) {
+        this.power = power;
     }
 }

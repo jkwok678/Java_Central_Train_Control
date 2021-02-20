@@ -52,6 +52,10 @@ public class GUI {
     private TextArea output;
     private Text trainText;
     private TextArea trainOutput;
+    private Label sendDCCLabel;
+    private HBox sendDCCHBox;
+    private TextField sendDCCTextField;
+    private Button sendDCCButton;
     private VBox layout;
     private EventHandler InputEvent;
 
@@ -199,7 +203,7 @@ public class GUI {
                     .observableArrayList(dataCentre.getComNameList()));
             USBInputChooser.getSelectionModel().selectFirst();
             dataCentre.setChosenInputPortName(USBInputChooser.getValue().toString());
-            dataCentre.setPortFromPortName(USBInputChooser.getValue().toString());
+            dataCentre.setInputPortFromPortName(USBInputChooser.getValue().toString());
             USBInputChooser.setDisable(false);
             USBInputChooser.setVisible(true);
 
@@ -235,7 +239,7 @@ public class GUI {
     public void handleUSBInputChooserInput(String newValue)
     {
         dataCentre.setChosenInputPortName(newValue);
-        dataCentre.setPortFromPortName(newValue);
+        dataCentre.setInputPortFromPortName(newValue);
     }
 
 
@@ -252,6 +256,7 @@ public class GUI {
             {
                 dataCentre.startWIFIMode();
             }
+
             Timer timer = new Timer();
             timer.schedule(new TimerTask()
             {
@@ -262,7 +267,7 @@ public class GUI {
                     {
                         if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
                         {
-                            if (dataCentre.openSelectedPort())
+                            if (dataCentre.openSelectedInputPort())
                             {
                                 //Read from USB
 
@@ -299,7 +304,7 @@ public class GUI {
             go = false;
             if (USBWIFIGroup.getSelectedToggle().getUserData().toString().equals("USB"))
             {
-                if (dataCentre.closeSelectedPort())
+                if (dataCentre.closeSelectedInputPort())
                 {
                     confirmationError.setText("Connection to" + dataCentre.getChosenInputPortName() + " is closed");
                 }
@@ -314,6 +319,24 @@ public class GUI {
 
     }
 
+
+    /**
+     * A method to handle choosing what USB to use.
+     */
+    public void handleSendDCCCommand(String newValue)
+    {
+        String port = dataCentre.getChosenOutputPortName();
+        if (dataCentre.openSelectedDCCOutputPort())
+        {
+            //Read from USB
+
+            confirmationError.setText(port + " is opened for DCC connection.");
+        }
+        else
+        {
+            confirmationError.setText("Cannot connect to" + port + " for DCC connection.");
+        }
+    }
     /**
      * A method to create the top half of the GUI.
      */
@@ -360,7 +383,7 @@ public class GUI {
                                 final String oldvalue, final String newvalue)
             {
                 dataCentre.setChosenInputPortName(newvalue);
-                dataCentre.setPortFromPortName(newvalue);
+                dataCentre.setInputPortFromPortName(newvalue);
             }
         });
 
@@ -374,6 +397,15 @@ public class GUI {
     {
         USBOutputDCCChooser.setItems(FXCollections
                 .observableArrayList(dataCentre.getComNameList()));
+        USBOutputDCCChooser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
+        {
+            public void changed(ObservableValue<? extends String> ov,
+                                final String oldvalue, final String newvalue)
+            {
+                dataCentre.setChosenOutputPortName(newvalue);
+                dataCentre.setDCCOuputPortFromPortName(newvalue);
+            }
+        });
     }
     /**
      * A method to create the bottom half of the GUI.
@@ -392,6 +424,15 @@ public class GUI {
         trainText = new Text("Trains that are loaded");
         trainOutput = new TextArea();
         trainOutput.setEditable(false);
+        sendDCCLabel = new Label("Type DCC commands : ");
+        sendDCCHBox = new HBox();
+        sendDCCTextField = new TextField();
+        sendDCCTextField.setPrefWidth(600);
+        sendDCCButton = new Button("Send");
+        sendDCCButton.setMinWidth(40);
+        sendDCCHBox.getChildren().add(sendDCCTextField);
+
+        sendDCCHBox.getChildren().add(sendDCCButton);
         layout = new VBox();
     }
 
@@ -415,6 +456,8 @@ public class GUI {
         layout.getChildren().add(output);
         layout.getChildren().add(trainText);
         layout.getChildren().add(trainOutput);
+        layout.getChildren().add(sendDCCLabel);
+        layout.getChildren().add(sendDCCHBox);
     }
 
     /**
