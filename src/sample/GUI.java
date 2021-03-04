@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -53,10 +54,12 @@ public class GUI {
     private Text trainText;
     private TextArea trainOutput;
     private Label sendDCCLabel;
+    private Text confirmationError2;
     private HBox sendDCCHBox;
     private TextField sendDCCTextField;
     private Button sendDCCButton;
     private VBox layout;
+    private Button powerDCCButton;
     private EventHandler InputEvent;
 
     /**
@@ -323,7 +326,7 @@ public class GUI {
     /**
      * A method to handle choosing what USB to use.
      */
-    public void handleSendDCCCommand(String newValue)
+    public void handleSendDCCCommand(String commandToSend)
     {
         String port = dataCentre.getChosenOutputPortName();
         if (dataCentre.openSelectedDCCOutputPort())
@@ -336,6 +339,24 @@ public class GUI {
         {
             confirmationError.setText("Cannot connect to" + port + " for DCC connection.");
         }
+    }
+    /**
+     * A method to toggle power on and off for DCC controller.
+     */
+    public void handleTogglePower()
+    {
+
+        dataCentre.togglePowerCommand();
+        if (dataCentre.isPower())
+        {
+            powerDCCButton.setText("Off");
+        }
+        else
+        {
+            powerDCCButton.setText("On");
+        }
+
+
     }
     /**
      * A method to create the top half of the GUI.
@@ -404,6 +425,20 @@ public class GUI {
             {
                 dataCentre.setChosenOutputPortName(newvalue);
                 dataCentre.setDCCOuputPortFromPortName(newvalue);
+                String port = dataCentre.getChosenOutputPortName();
+                if (dataCentre.openSelectedDCCOutputPort())
+                {
+
+                    confirmationError2.setText(port + " is opened for DCC connection.");
+                }
+                else
+                {
+                    Alert a = new Alert(Alert.AlertType.INFORMATION);
+                    a.setContentText("Cannot connect to DCC connection");
+                    a.show();
+                    //confirmationError.setText("Cannot connect to" + port + " for DCC connection.");
+                }
+
             }
         });
     }
@@ -425,14 +460,18 @@ public class GUI {
         trainOutput = new TextArea();
         trainOutput.setEditable(false);
         sendDCCLabel = new Label("Type DCC commands : ");
+        confirmationError2 = new Text();
         sendDCCHBox = new HBox();
         sendDCCTextField = new TextField();
         sendDCCTextField.setPrefWidth(600);
         sendDCCButton = new Button("Send");
         sendDCCButton.setMinWidth(40);
+        sendDCCButton.setOnAction(actionEvent -> handleSendDCCCommand(sendDCCTextField.getText()));
         sendDCCHBox.getChildren().add(sendDCCTextField);
 
         sendDCCHBox.getChildren().add(sendDCCButton);
+        powerDCCButton = new Button("On");
+        powerDCCButton.setOnAction(actionEvent -> handleTogglePower());
         layout = new VBox();
     }
 
@@ -458,6 +497,7 @@ public class GUI {
         layout.getChildren().add(trainOutput);
         layout.getChildren().add(sendDCCLabel);
         layout.getChildren().add(sendDCCHBox);
+        layout.getChildren().add(powerDCCButton);
     }
 
     /**

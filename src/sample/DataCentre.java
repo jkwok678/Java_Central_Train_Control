@@ -332,7 +332,9 @@ public class DataCentre {
 
         try {
             wholeMessage = inputBuffer.readLine();
-            //System.out.println(wholeMessage);
+            wholeMessage = wholeMessage.substring(0,wholeMessage.length()-1);
+            String[] informationSent = wholeMessage.split(",");
+            System.out.println(wholeMessage);
             addToArraylists(wholeMessage);
         } catch (IOException e) {
             e.printStackTrace();
