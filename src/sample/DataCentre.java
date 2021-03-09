@@ -40,6 +40,8 @@ public class DataCentre {
     private SerialPort currentDCCOutputPort;
     private String chosenOutputPortName;
     private boolean power;
+    private String lastDCCCommand;
+    String[] lastDCCCommandData;
     String output;
 
     /**
@@ -209,6 +211,7 @@ public class DataCentre {
             if (port.getSystemPortName().equals(portWanted))
             {
                 currentDCCOutputPort = port;
+                currentDCCOutputPort.setBaudRate(115200);
             }
         }
 
@@ -335,12 +338,23 @@ public class DataCentre {
             wholeMessage = wholeMessage.substring(0,wholeMessage.length()-1);
             String[] informationSent = wholeMessage.split(",");
             System.out.println(wholeMessage);
+            wholeMessage = removeUneededCharacters(wholeMessage);
             addToArraylists(wholeMessage);
+            String[] data = convertStringMessageToStringArray(wholeMessage);
+            sendNFCInstruction(data);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return wholeMessage;
 
+    }
+    /**
+     * A method to remove unwanted characters.
+     */
+    private String removeUneededCharacters(String wholeMessage)
+    {
+        String newWholeMessage = wholeMessage.replace("\n", "").replace("\r", "");
+        return newWholeMessage;
     }
 
     /**
@@ -355,10 +369,8 @@ public class DataCentre {
         //Infomration is stored in an arraylist.
         if (wholeMessage != null)
         {
-            wholeMessage = wholeMessage.replace("\n", "").replace("\r", "");
             inputTime.add(timeString);
             input.add(wholeMessage);
-            //process(wholeMessage);
         }
 
     }
@@ -368,21 +380,75 @@ public class DataCentre {
      * @param wholeMessage
      * @return
      */
-    public String process (String wholeMessage)
+    public String[] convertStringMessageToStringArray (String wholeMessage)
     {
-        String[] data = wholeMessage.split(",");
-        for(String part : data)
+        String[] NFCData = wholeMessage.split(",");
+        for(String part : NFCData)
         {
             part = part.replaceAll("[^\\d.]", "");
         }
-        String train = data[0];
-        String location = data[1];
-        String maxSpeed = data[2];
-        String gradient = data[3];
-        String length = data[4];
-        output = ("Train "+ train + " is at location "+ location + ". Max speed is "+ maxSpeed + ". Gradient is "+
-                gradient+ ". Length is "+ length+".");
-        return output;
+        String train = NFCData[0];
+        String location = NFCData[1];
+        String maxSpeedFwd = NFCData[2];
+        String fwdLength = NFCData[3];
+        String maxSpeedBack = NFCData[4];
+        String backLength = NFCData[5];
+        output = ("Train "+ train + " is at location "+ location + ". Max forward speed is "+ maxSpeedFwd + " Length forward is "+ fwdLength
+                + " Max backward speed is " + maxSpeedBack + " Length backwards is "+ backLength + ".");
+        return NFCData;
+    }
+
+    /**
+     * A method to send data to the DCC command contol
+     */
+    public boolean sendNFCInstruction(String[] lastNFCData)
+    {
+        boolean sent = false;
+        String command ="";
+        //If the train is train 001
+        System.out.println(lastNFCData[0]);
+        if (lastNFCData[0].equals("001"))
+        {
+            command="<t 1 001";
+        }
+        //
+        int lastSpeed = Integer.parseInt(lastDCCCommandData[3]);
+        int nextSpeed = Integer.parseInt(lastNFCData[2]);
+
+        System.out.println(command);
+
+        if (lastDCCCommandData[4].equals("1"))
+        {
+            if (lastSpeed > nextSpeed)
+            {
+                command = command + " " + nextSpeed + " " + lastDCCCommandData[4] + " >";
+            }
+            System.out.println(command);
+        }
+        int sendNum = currentDCCOutputPort.writeBytes(command.getBytes(), command.getBytes().length);
+        if (sendNum == command.getBytes().length){
+            sent = true;
+        }
+
+        return sent;
+    }
+
+    /**
+     * A method to send data to the DCC command contol
+     */
+    public boolean sendInstruction(String commandToSend)
+    {
+        boolean sent = false;
+        if (currentDCCOutputPort.isOpen())
+        {
+            int numberSent = currentDCCOutputPort.writeBytes(commandToSend.getBytes(), commandToSend.getBytes().length);
+            if (commandToSend.getBytes().length == numberSent)
+            {
+                sent = true;
+            }
+        }
+
+        return sent;
     }
 
     /**
@@ -506,5 +572,24 @@ public class DataCentre {
      */
     public void setPower(boolean power) {
         this.power = power;
+    }
+
+    public void saveLastDCCCommand(String command)
+    {
+        this.lastDCCCommand = command;
+        this.lastDCCCommand = lastDCCCommand.replaceAll("\\p{Punct}","");
+        System.out.println(lastDCCCommand);
+        String[] data = lastDCCCommand.split(" ");
+        for(int i = 0; i<data.length; i++)
+        {
+            System.out.println(data[i]);
+        }
+        this.lastDCCCommandData = data;
+        //lastDCCCommandData[0] = command title e.g. t
+        //lastDCCCommandData[1] = depreciated value
+        //lastDCCCommandData[2] = train_id
+        //lastDCCCommandData[3] = speed
+        //lastDCCCommandData[4] = direction
+
     }
 }

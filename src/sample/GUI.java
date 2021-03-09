@@ -333,11 +333,16 @@ public class GUI {
         {
             //Read from USB
 
-            confirmationError.setText(port + " is opened for DCC connection.");
+            if (dataCentre.sendInstruction(commandToSend))
+            {
+                dataCentre.saveLastDCCCommand(commandToSend);
+                confirmationError2.setText(port + " is opened for DCC connection."+ "Sent " + commandToSend);
+            }
+
         }
         else
         {
-            confirmationError.setText("Cannot connect to" + port + " for DCC connection.");
+            confirmationError2.setText("Cannot connect to" + port + " for DCC connection.");
         }
     }
     /**
@@ -459,7 +464,7 @@ public class GUI {
         trainText = new Text("Trains that are loaded");
         trainOutput = new TextArea();
         trainOutput.setEditable(false);
-        sendDCCLabel = new Label("Type DCC commands : ");
+        sendDCCLabel = new Label("Type train DCC commands : ");
         confirmationError2 = new Text();
         sendDCCHBox = new HBox();
         sendDCCTextField = new TextField();
@@ -498,6 +503,7 @@ public class GUI {
         layout.getChildren().add(sendDCCLabel);
         layout.getChildren().add(sendDCCHBox);
         layout.getChildren().add(powerDCCButton);
+        layout.getChildren().add(confirmationError2);
     }
 
     /**
