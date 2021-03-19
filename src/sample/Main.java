@@ -15,8 +15,9 @@ public class Main extends Application {
     {
         DataCentre data = new DataCentre();
         System.out.println(data.convertStringMessageToStringArray("001,005,040,0,100,100;"));
-        data.saveLastDCCCommand("<t 1 01 20 1>");
-        //data.sendNFCInstruction();
+        data.saveLastDCCCommand("<t 1 01 120 1>");
+        //String[] dataset = {"001","005","040","0","100","100"};
+        //data.sendNFCInstruction(dataset);
         GUI gui = new GUI(data);
 
         primaryStage.setTitle("Hello World");

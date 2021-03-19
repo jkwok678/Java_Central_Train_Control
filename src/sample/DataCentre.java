@@ -406,30 +406,28 @@ public class DataCentre {
         boolean sent = false;
         String command ="";
         //If the train is train 001
-        System.out.println(lastNFCData[0]);
         if (lastNFCData[0].equals("001"))
         {
             command="<t 1 001";
         }
-        //
         int lastSpeed = Integer.parseInt(lastDCCCommandData[3]);
         int nextSpeed = Integer.parseInt(lastNFCData[2]);
-
-        System.out.println(command);
-
         if (lastDCCCommandData[4].equals("1"))
         {
             if (lastSpeed > nextSpeed)
             {
                 command = command + " " + nextSpeed + " " + lastDCCCommandData[4] + " >";
+
+                int sendNum = currentDCCOutputPort.writeBytes(command.getBytes(), command.getBytes().length);
+                if (sendNum == command.getBytes().length)
+                {
+                    sent = true;
+                }
             }
-            System.out.println(command);
-        }
-        int sendNum = currentDCCOutputPort.writeBytes(command.getBytes(), command.getBytes().length);
-        if (sendNum == command.getBytes().length){
-            sent = true;
         }
 
+        this.lastDCCCommand = command;
+        System.out.println(command);
         return sent;
     }
 
